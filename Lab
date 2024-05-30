@@ -86,12 +86,12 @@ int prior(char c)
 	}
 }
 
-bool correctInputInf(string& data) 
+bool correctInputInfix(string& data) 
 {
-	bool flag_oper = 0; 
-	bool flag_bracket = 0;
-	int count_num = 0; 
-	int count_oper = 0;
+	bool flagOper = 0; 
+	bool flagBracket = 0;
+	int countNum = 0; 
+	int countOper = 0;
 	for (int i = 0; i < data.length(); ++i) 
 	{
 		if (data[i] == ' ') 
@@ -103,23 +103,23 @@ bool correctInputInf(string& data)
 	{
 		if (data[i] == '(') 
 		{
-			if (!flag_oper && i != 0 || flag_bracket || operations.find(data[i + 1]) != -1) 
+			if (!flagOper && i != 0 || flagBracket || operations.find(data[i + 1]) != -1) 
 			{
 				return 0;
 			}
-			flag_bracket = 1;
+			flagBracket = 1;
 		}
 		else if (data[i] == ')') 
 		{
-			if (!flag_bracket || flag_oper || i != data.length() - 1 && operations.find(data[i + 1]) == -1) 
+			if (!flagBracket || flagOper || i != data.length() - 1 && operations.find(data[i + 1]) == -1) 
 			{
 				return 0;
 			}
-			flag_bracket = 0;
+			flagBracket = 0;
 		}
 		else if (data[i] >= '0' && data[i] <= '9' || data[i] == '.') 
 		{
-			flag_oper = 0;
+			flagOper = 0;
 		}
 		else if (operations.find(data[i]) != -1) 
 		{
@@ -127,11 +127,11 @@ bool correctInputInf(string& data)
 			{
 				return 0;
 			}
-			if (flag_oper) 
+			if (flagOper) 
 			{
 				return 0;
 			}
-			flag_oper = 1;
+			flagOper = 1;
 		}
 		else if (data[i] == '\0') 
 		{
@@ -145,10 +145,10 @@ bool correctInputInf(string& data)
 	return 1;
 }
 
-bool correctInputPo(string& data) 
+bool correctInputPostfix(string& data) 
 {
-	int count_oper = 0; 
-	int count_num = 0;
+	int countOper = 0; 
+	int countNum = 0;
 	for (int i = 0; i < data.length(); ++i) 
 	{
 		if (operations.find(data[i]) != -1) 
@@ -157,13 +157,13 @@ bool correctInputPo(string& data)
 			{
 				return 0;
 			}
-			count_oper++;
+			countOper++;
 		}
 		else if (data[i] == ' ') 
 		{
 			if (operations.find(data[i - 1]) == -1)
 			{
-				count_num++;
+				countNum++;
 			}
 		}
 		else if (data[i] >= '0' && data[i] <= '9') 
@@ -183,17 +183,17 @@ bool correctInputPo(string& data)
 			return 0;
 		}
 	}
-	if (count_oper != count_num - 1) 
+	if (countOper != countNum - 1) 
 	{
 		return 0;
 	}
 	return 1;
 }
 
-bool correctInputPre(string& data) 
+bool correctInputPrefix(string& data) 
 {
-	int count_oper = 0; 
-	int count_num = 0;
+	int countOper = 0; 
+	int countNum = 0;
 	if (data[0] == ' ') 
 	{
 		data.erase(0, 1);
@@ -206,13 +206,13 @@ bool correctInputPre(string& data)
 			{
 				return 0;
 			}
-			count_oper++;
+			countOper++;
 		}
 		else if (data[i] == ' ' || data[i] == '\0') 
 		{
 			if (operations.find(data[i - 1]) == -1)
 			{
-				count_num++;
+				countNum++;
 			}
 		}
 		else if (data[i] >= '0' && data[i] <= '9') 
@@ -232,7 +232,7 @@ bool correctInputPre(string& data)
 			return 0;
 		}
 	}
-	if (count_oper != count_num - 1) 
+	if (countOper != countNum - 1) 
 	{
 		return 0;
 	}
@@ -264,7 +264,7 @@ void calculate(string& data, bool prefix)
 {
 	if (prefix) 
 	{
-		if (!correctInputPre(data)) 
+		if (!correctInputPrefix(data)) 
 		{
 			cout << "Error!\n";
 			return;
@@ -276,7 +276,7 @@ void calculate(string& data, bool prefix)
 	}
 	else 
 	{
-		if (!correctInputPo(data)) 
+		if (!correctInputPostfix(data)) 
 		{
 			cout << "Error!\n";
 			return;
@@ -285,8 +285,8 @@ void calculate(string& data, bool prefix)
 	Stack numbers;
 	string num;
 	string sym;
-	double val_1;
-	double val_2;
+	double val1;
+	double val2;
 	for (int i = 0; i <= data.length(); i++) 
 	{
 		sym = data[i];
@@ -294,16 +294,16 @@ void calculate(string& data, bool prefix)
 		{
 			if (prefix) 
 			{
-				val_1 = stod(numbers.pop(0));
-				val_2 = stod(numbers.pop(0));
+				val1 = stod(numbers.pop(0));
+				val2 = stod(numbers.pop(0));
 			}
 			else 
 			{
-				val_2 = stod(numbers.pop(0));
-				val_1 = stod(numbers.pop(0));
+				val2 = stod(numbers.pop(0));
+				val1 = stod(numbers.pop(0));
 			}
 
-			numbers.push(to_string(action(val_1, val_2, sym)));
+			numbers.push(to_string(action(val1, val2, sym)));
 		}
 		if (sym >= "0" && sym <= "9" || sym == ".") 
 		{
@@ -311,7 +311,10 @@ void calculate(string& data, bool prefix)
 		}
 		if (sym == " ") 
 		{
-			if (operations.find(data[i - 1]) != -1) continue;
+			if (operations.find(data[i - 1]) != -1) 
+			{
+				continue;
+			}
 			if (prefix) 
 			{
 				for (int j = num.length() - 1, i = 0; j >= i; --j, ++i) 
@@ -327,11 +330,11 @@ void calculate(string& data, bool prefix)
 	cout << "\n";
 }
 
-void RevPN(string& data, bool print = 1)
+void ReversePolishNotation(string& data, bool print = 1)
 {
-	Stack steak;
+	Stack stack;
 	string note;
-	if (!correctInputInf(data))
+	if (!correctInputInfix(data))
 	{
 		cout << "Error!\n";
 		return;
@@ -358,56 +361,57 @@ void RevPN(string& data, bool print = 1)
 			if (print) 
 			{
 				cout << "\nThe stack of operands: " << note << "\n";
-				steak.output();
+				stack.output();
 			}
 		}
 		if (sym == "(") 
 		{
-			steak.push(sym);
+			stack.push(sym);
 			if (print) 
 			{
 				cout << "\nThe stack of operands: " << note << "\n";
-				steak.output();
+				stack.output();
 			}
 			continue;
 		}
 		if (sym == ")") 
 		{
-			while (steak.tail->symbol != "(") 
+			while (stack.tail->symbol != "(") 
 			{
-				note += steak.pop(0);
+				note += stack.pop(0);
 				note += " ";
 			}
-			steak.pop(0);
+			stack.pop(0);
 			if (print) 
 			{
 				cout << "\nThe stack of operands: " << note << "\n";
-				steak.output();
+				stack.output();
 			}
 			continue;
 		}
 		if (operations.find(sym) != -1) 
 		{
-			if (steak.isEmpty() || prior(steak.tail->symbol[0] < prior(sym[0]))) 
+			if (stack.isEmpty() || prior(stack.tail->symbol[0] < prior(sym[0]))) 
 			{
-				steak.push(sym);
+				stack.push(sym);
 				if (print) 
 				{
 					cout << "\nThe stack of operands: " << note << "\n";
-					steak.output();
+					stack.output();
 				}
 			}
-			else {
-				while (!steak.isEmpty() && prior(steak.tail->symbol[0]) >= prior(sym[0])) 
+			else 
+			{
+				while (!stack.isEmpty() && prior(stack.tail->symbol[0]) >= prior(sym[0])) 
 				{
-					note += steak.pop(0);
+					note += stack.pop(0);
 					note += " ";
 				}
-				steak.push(sym);
+				stack.push(sym);
 				if (print) 
 				{
 					cout << "\nThe stack of operands: " << note << "\n";
-					steak.output();
+					stack.output();
 				}
 			}
 		}
@@ -415,11 +419,11 @@ void RevPN(string& data, bool print = 1)
 	if (print) 
 	{
 		cout << "\nThe stack of operands: " << note << "\n";
-		steak.output();
+		stack.output();
 	}
-	while (!steak.isEmpty()) 
+	while (!stack.isEmpty()) 
 	{
-		note += steak.pop(0);
+		note += stack.pop(0);
 		note += " ";
 	};
 	if (print) 
@@ -430,9 +434,9 @@ void RevPN(string& data, bool print = 1)
 	data = note;
 }
 
-void StandPN(string& data) 
+void StraightPolishNotation(string& data) 
 {
-	if (!correctInputInf(data)) 
+	if (!correctInputInfix(data)) 
 	{
 		cout << "Error!\n";
 		return;
@@ -458,7 +462,7 @@ void StandPN(string& data)
 		}
 	}
 	cout << "Preparing... ";
-	RevPN(note, 0);
+	ReversePolishNotation(note, 0);
 	data.erase(0, data.length());
 	for (int j = note.length() - 1; j >= 0; --j) 
 	{
@@ -483,17 +487,17 @@ void menu(string& data)
 			cin.ignore();
 			cout << "Enter the infix: ";
 			getline(cin, data);
-			RevPN(data);
+			ReversePolishNotation(data);
 			break;
 		case 2:
 			data.erase(0, data.length());
 			cin.ignore();
 			cout << "Enter the infix: ";
 			getline(cin, data);
-			StandPN(data);
+			StraightPolishNotation(data);
 			break;
 		case 3:
-			if (!correctInputPo(data)) 
+			if (!correctInputPostfix(data)) 
 			{
 				cout << "You should to enter new reverse(postfix) note: ";
 				cin.ignore();
@@ -515,7 +519,7 @@ void menu(string& data)
 			calculate(data, 0);
 			break;
 		case 4:
-			if (!correctInputPre(data)) 
+			if (!correctInputPrefix(data)) 
 			{
 				cout << "You should to enter new prefix note: ";
 				cin.ignore();
@@ -563,7 +567,7 @@ void menu(string& data)
 			switch (switcher) 
 			{
 			case 1:
-				if (correctInputInf(data)) 
+				if (correctInputInfix(data)) 
 				{
 					cout << "Correct!\n";
 				}
@@ -573,7 +577,7 @@ void menu(string& data)
 				}
 				break;
 			case 2:
-				if (correctInputPre(data)) 
+				if (correctInputPrefix(data)) 
 				{
 					cout << "Correct!\n";
 				}
@@ -583,7 +587,7 @@ void menu(string& data)
 				}
 				break;
 			case 3:
-				if (correctInputPo(data)) 
+				if (correctInputPostfix(data)) 
 				{
 					cout << "Correct!\n";
 				}
