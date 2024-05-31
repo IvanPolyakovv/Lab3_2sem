@@ -527,7 +527,7 @@ void menu(string& data)
 			}
 			else 
 			{
-				cout << "Do you want to enter new prefix note? (\'no\'=0) ";
+				cout << "Do you want to enter new prefix note? (Yes - 1, No - 0) ";
 				cin >> switcher;
 				if (switcher) 
 				{
